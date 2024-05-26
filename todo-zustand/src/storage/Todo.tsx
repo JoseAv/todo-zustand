@@ -1,20 +1,26 @@
-import {create} from 'zustand'
-
+import { create } from 'zustand'
+import {Fetching} from   '../Fetching/GetFeching'
+import {type typeData} from  '../types/data' 
 interface typeTodo {
-ArrayTodo: [],
-newTask: object,
+    ArrayTodo: typeData[],
+    GetAllData: () => Promise<void>
 
 }
 
 
 export const UseTodo = create<typeTodo>((set) => {
     return {
-    ArrayTodo : [],
-    newTask: {}
+        ArrayTodo: [],
 
-   function GetTask(params:type) {
-    
-   }
-}
+       async GetAllData(){
+        const response = await Fetching()
+        set({ArrayTodo:response})
+        }
+        
+
+        
+
+
+    }
 })
 
