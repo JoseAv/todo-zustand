@@ -1,16 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './App.css'
 import {Header} from './Components/Header'
-import { Container } from "@mui/material"
+import { Button, Container } from "@mui/material"
 import { Main } from './Components/Main'
+import { Foter } from "../src/Components/Foter"
+import { useFilters } from './storage/Filter'
 function App() {
-  
-
+  const modal = useFilters((state)=> state.modal)
   return (
     <>
     <Container maxWidth={'sm'}>
-    <Header/>
-      <Main/>
+
+        {modal ? <>
+          
+          <Foter/>
+          
+        </> : <>
+        
+            <Header />
+            <Main />
+        </>}
+ 
     </Container>
     </>
   )

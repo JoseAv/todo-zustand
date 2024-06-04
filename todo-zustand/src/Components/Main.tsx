@@ -1,28 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { UseTodo } from "../storage/Todo"
-import { Button, Checkbox, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemIcon, ListItemSecondaryAction } from "@mui/material";
+import { useFilters } from '../storage/Filter'
+import { Todo_Filters, Show_Filters } from '../types/Const'
+import { Button, Checkbox, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemIcon, ListItemSecondaryAction, Stack } from "@mui/material";
 import BackspaceRoundedIcon from '@mui/icons-material/BackspaceRounded';
 
 
 export function Main() {
 
+    const filteredTodos = useFilters((state) => state.filteredTodos)
+    const updateArrayFiltered = useFilters((state) => state.updateArrayFiltered)
+    const filtersActions = useFilters((state) => state.filtersActions)
+    const filtersShows = useFilters((state) => state.filtersShows)
     const ArrayTodo = UseTodo((state) => state.ArrayTodo)
     const GetAllData = UseTodo((state) => state.GetAllData)
     const SwitchCompletd = UseTodo((state) => state.SwitchCompletd)
     const DeleteTodo = UseTodo((state) => state.DeleteTodo)
+    console.log(filteredTodos)
+    useEffect(() => {
+        updateArrayFiltered()
 
+    }, [ArrayTodo])
 
-
+    
     return (
-        <>
-            {ArrayTodo.length <= 0 ? <Button variant="contained" onClick={() => GetAllData()}>Ejemplo</Button> :
+        <Stack justifyContent='center' alignItems='center'>
+            
+            {filteredTodos.length <= 0 ? <Button variant="contained" onClick={() => GetAllData()}>Ejemplo</Button> :
                 < List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                    {ArrayTodo.map((value, index) => {
+                    {filteredTodos.map((value, index) => {
                         const labelId = `checkbox-list-label-${index}`;
 
                         return (
                             <ListItem
-                                key={value.id}
+                                key={index}
                                 disablePadding
 
 
@@ -37,7 +48,7 @@ export function Main() {
                                             inputProps={{ 'aria-labelledby': labelId }}
                                         />
                                     </ListItemIcon>
-                                    <ListItemText id={labelId} primary={value.name} />
+                                    <ListItemText id={labelId}  primary={value.name}  />
                                 </ListItemButton>
 
                                 <ListItemSecondaryAction>
@@ -54,7 +65,7 @@ export function Main() {
 
             }
 
-        </>
+        </Stack>
     )
 }
 

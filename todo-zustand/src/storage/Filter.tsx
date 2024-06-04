@@ -1,43 +1,79 @@
-import {create} from 'zustand'
+import { create } from 'zustand'
 import { UseTodo } from './Todo'
-import { Todo_Filters, type TypesFilter } from '../types/Const.ts'
-import { typeData } from '../types/data'
+import { Todo_Filters, type TypesFilter, type TypesShowFilters, Show_Filters } from '../types/Const.ts'
+import type {  typeData } from '../types/data.d.ts'
+import { useEffect } from 'react'
 
-interface TypesFilters{
-    filters: TypesFilter
-    filters_todo: (fil: TypesFilter) => void
+interface TypesFilters {
+    filtersActions: TypesFilter | null
+    filtersShows: TypesShowFilters | null
+    actionFilters: (fil: TypesFilter | null) => void
     filteredTodos: typeData[]
+    updateArrayFiltered: ()=> void
+    showFilters: (fil: TypesShowFilters | null) =>  void
+    modal: boolean
+    updateModa: ()=> void
 }
 
 
 
-export const useFilters = create<TypesFilters>((set,get) => {
-    const ArrayTodo = UseTodo((state) => state.ArrayTodo)
-    const AllCompleted = UseTodo((state) => state.AllCompleted)
+export const useFilters = create<TypesFilters>((set, get) => {
+    const AllCompleted = UseTodo.getState().AllCompleted
+    const DeleteCompleted = UseTodo.getState().DeleteCompleted
+    
     
 
-return { 
-    filteredTodos: [...ArrayTodo],
-    filters: Todo_Filters.All,
-    filters_todo(fil){
+    return {
+        filteredTodos: [],
+        filtersActions: null ,
+        filtersShows: Show_Filters.All,
+        modal: false,
 
-        if (fil === Todo_Filters.All) set({ filters: Todo_Filters .All})
-        if (fil === Todo_Filters.AllCompleted) set({ filters: Todo_Filters.AllCompleted })
-        if (fil === Todo_Filters.DeleteComleted) set({ filters: Todo_Filters.DeleteComleted })
+        actionFilters(fil) {
+            set({ filtersActions: fil, filtersShows: null })
 
-        const { filteredTodos } = get()
-        const newArrayTodo = filteredTodos.filter(e => 
-            fil === Todo_Filters.All ? set({ filteredTodos }) 
-            :
-                fil === Todo_Filters.AllCompleted? 
-                    AllCompleted()
-            :
-                ''
-        )
+            if (fil === Todo_Filters.AllCompleted) {
+                AllCompleted();
+                set({ modal: false })
+            } else if (fil === Todo_Filters.DeleteComleted) {
+                DeleteCompleted();
+                set({ modal: false })
+            }
+        },
+
+
+
+
+        showFilters(fil){
+
+            set({ filtersShows: fil, filtersActions: null })
+            const { ArrayTodo } = UseTodo.getState();
+
+            let newFilter = ArrayTodo
+            if (fil === Show_Filters.Completed) {
+                newFilter = ArrayTodo.filter(e => e.completed === true);
+            } else if (fil === Show_Filters.Unfinished) {
+                newFilter = ArrayTodo.filter(e => e.completed !== true);
+            }
+            set({ filteredTodos: newFilter, modal:false })
+        },
         
+        updateArrayFiltered(){
+            const {ArrayTodo} = UseTodo.getState()
+            const {filtersShows} = get()
+            const { filtersActions } = get()
+            if (filtersShows === Show_Filters.All || filtersActions !== null) {
+                set({ filteredTodos: ArrayTodo })
+            }
+            
+        },
+        updateModa(){
+            set({ modal: true })
+ 
+
+        }
+
+
+
     }
-
-
-
-}
 })

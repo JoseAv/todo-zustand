@@ -8,6 +8,7 @@ interface typeTodo {
     DeleteTodo: (id: number) => void
     AddTodo: (name: string) => void
     AllCompleted: ()=> void
+    DeleteCompleted: ()=> void
 }
 
 
@@ -60,7 +61,14 @@ export const UseTodo = create<typeTodo>((set, get) => {
             })
 
             set({ ArrayTodo: newArrayTodo });
+        },
+        DeleteCompleted(){
+            const {ArrayTodo} = get()
+            const newArrayTodo = ArrayTodo.filter(todo => todo.completed !== true)
+            set({ ArrayTodo: newArrayTodo })
         }
+
+        
 
 
     }
